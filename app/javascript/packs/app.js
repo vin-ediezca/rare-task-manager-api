@@ -69,7 +69,14 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (task) {
           task.completed = !task.completed;
-          this.message = `Task ${id} updated.`;
+          this.task = task;
+
+          Api.updateTask(this.task).then(function(response) {
+            app.listTasks();
+            app.clear();
+            let status = response.completed ? 'completed' : 'in progress';
+            app.message = `Task ${response.id} is ${status}.`;
+          })
         }
       },
 
@@ -80,13 +87,12 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           this.task.completed = true;
         }
-
-        let taskId = this.nextId;
-
-        this.task.id = taskId;
-        this.tasks.push(this.task);
-        this.clear();
-        this.message = `Task ${taskId} created.`
+        
+        Api.createTask(this.task).then(function(response) {
+          app.listTasks();
+          app.clear();
+          app.message = `Task ${response.id} created.`
+        })
       },
 
       editTask: function(event, id) {
@@ -107,14 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTask: function(event, id) {
         event.stopImmediatePropagation();
 
-        let task = this.tasks.find(item => item.id == id);
-
-        if (task) {
-          task.name = this.task.name;
-          task.description = this.task.description;
-          task.completed = this.task.completed;
-          this.message = `Task ${id} updated.`;
-        }
+        Api.updateTask(this.task).then(function(response) {
+          app.listTasks();
+          app.clear();
+          app.message = `Task ${response.id} updated.`;
+        })
       },
 
       deleteTask: function(event, id) {
@@ -123,12 +126,14 @@ document.addEventListener("DOMContentLoaded", () => {
         let taskIndex = this.tasks.findIndex(item => item.id == id);
 
         if (taskIndex > -1) {
-          this.$delete(this.tasks, taskIndex)
-          this.message = `Task ${id} deleted.`;
+          Api.deleteTask(id).then(function(response) {
+            app.$delete(app.tasks, taskIndex);
+            app.message = `Task ${id} deleted.`;
+          });
         }
-      },
+      }
+    },
 
-      beforeMount() { this.listTasks() }
-    }
+    beforeMount() { this.listTasks() }
   })
 });
