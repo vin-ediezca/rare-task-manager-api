@@ -1,20 +1,20 @@
 <div id="app" class="pushable">
   <div class="ui sidebar inverted vertical menu visible fixed left">
-      <div class="ui logo item">
-        <b><i class="icon tasks purple"></i>Task Manager</b>
+    <div class="ui logo item">
+      <b><i class="icon tasks purple"></i>Task Manager</b>
+    </div>
+    <div class="item">
+      <div class="ui message green">
+        Use this tool to manage your todos. Have fun!
       </div>
-      <div class="item">
-        <div class="ui message green">
-          Use this tool to manage your todos. Have fun!
-        </div>
-        <div class="item" v-if="message">
-          <div class="ui message blue">
-            <i class="icon info"></i> {{ message }}
-          </div>
+      <div class="item" v-if="message">
+        <div class="ui message blue">
+          <i class="icon info"></i> {{ message }}
         </div>
       </div>
     </div>
-  <div class="ui container pusher">
+  </div>
+  <div class="main ui container pusher">
     <div class="ui grid">
       <div class="six wide column">
         <div id="todo" class="tasklist">
