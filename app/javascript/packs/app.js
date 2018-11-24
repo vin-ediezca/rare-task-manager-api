@@ -123,13 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
       deleteTask: function(event, id) {
         event.stopImmediatePropagation();
 
-        let taskIndex = this.tasks.findIndex(item => item.id == id);
+        if (confirm("Are you sure?")) {
 
-        if (taskIndex > -1) {
-          Api.deleteTask(id).then(function(response) {
-            app.$delete(app.tasks, taskIndex);
-            app.message = `Task ${id} deleted.`;
-          });
+          let taskIndex = this.tasks.findIndex(item => item.id == id);
+
+          if (taskIndex > -1) {
+            Api.deleteTask(id).then(function(response) {
+              app.$delete(app.tasks, taskIndex);
+              app.message = `Task ${id} deleted.`;
+            });
+          }
         }
       }
     },
