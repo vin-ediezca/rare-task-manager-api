@@ -41,10 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       todoTasks: function() {
         return this.tasks.filter(item => item.completed == false);
-      },
-
-      nextId: function() {
-        return (this.tasks.sort(function(a,b) { return a.id - b.id; }))[this.tasks.length - 1].id + 1;
       }
     },
     methods: {
