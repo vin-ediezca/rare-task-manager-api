@@ -9,7 +9,7 @@ export function listTasks() {
 export function createTask(task) {
   var localTask = task;
 
-  return axios.post('tasks.json', localTask).then(function(response){
+  return axios.post('/tasks.json', localTask).then(function(response) {
     return response.data;
   }).catch(function(error) {
     console.log(error);
