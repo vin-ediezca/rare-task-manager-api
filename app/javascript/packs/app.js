@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import draggable from 'vuedraggable';
 
 const Api = require('./api');
 
@@ -6,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   var app = new Vue({
     el: '#app',
     components: {
+      draggable,
       'task': {
         props: ['task'],
         template: 
@@ -15,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="ui grid">
               <div class="left floated twelve wide column">
                 <div class="ui checkbox">
-                  <input type="checkbox" name="task" v-on:click="$parent.toggleDone($event, task.id)" :checked="task.completed" >
+                  <input type="checkbox" name="task" v-on:click="this.$parent.toggleDone($event, task.id)" :checked="task.completed" >
                   <label>{{ task.name }} <span class="description">{{ task.description }}</span></label>
                 </div>
               </div>
@@ -30,23 +32,37 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     data: {
       tasks: [],
+      todoTasksList: [],
+      completedTasksList: [],
       task: {},
       message: '',
       action: 'create'
     },
     computed: {
-      completedTasks: function() {
-        return this.tasks.filter(item => item.completed == true);
-      },
+      // completedTasks: function() {
+      //   return this.tasks.filter(item => item.completed == true);
+      // },
 
-      todoTasks: function() {
-        return this.tasks.filter(item => item.completed == false);
-      }
+      // todoTasks: function() {
+      //   return this.tasks.filter(item => item.completed == false);
+      // }
     },
     methods: {
       listTasks: function() {
         Api.listTasks().then(function(response) {
           app.tasks = response;
+        })
+      },
+
+      completedTasks: function() {
+        Api.listTasks().then(function(response) {
+          app.completedTasksList = response.filter(item => item.completed == true);
+        })
+      },
+
+      todoTasks: function() {
+        Api.listTasks().then(function(response) {
+          app.todoTasksList = response.filter(item => item.completed == false);
         })
       },
 
@@ -77,17 +93,33 @@ document.addEventListener("DOMContentLoaded", () => {
       },
 
       createTask: function(event) {
+        event.stopImmediatePropagation();
+        let completed = this.completedTasksList;
+        let todo = this.todoTasksList;
+        let tasks = [];
 
         if (!this.task.completed) {
           this.task.completed = false;
+
+          for(var i = 0; i<todo.length; i++) {
+            todo[i].order = i+1;
+          }
+
+          tasks = todo;
         } else {
           this.task.completed = true;
-        }
+
+          for(var i = 0; i<completed.length; i++) {
+            completed[i].order = i+1;
+          }
+
+          tasks = completed;
+        };
         
         Api.createTask(this.task).then(function(response) {
-          app.listTasks();
+          app.saveOrder(tasks);
           app.clear();
-          app.message = `Task ${response.id} created.`
+          app.message = `Task ${response.id} created.`;
         })
       },
 
@@ -130,9 +162,41 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           }
         }
+      },
+
+      onUpdate: function() {
+        let completed = this.completedTasksList;
+        let todo = this.todoTasksList;
+
+        for(var i = 0; i<completed.length; i++) {
+          completed[i].order = i;
+          this.saveOrder(completed);
+        };
+
+        for(var i = 0; i<todo.length; i++) {
+          todo[i].order = i;
+          this.saveOrder(todo);
+        };
+      },
+
+      saveOrder: function(tasks) {
+        for(var i = 0; i<tasks.length; i++) {
+          Api.updateTask(tasks[i]).then(function() {
+            app.completedTasks();
+            app.todoTasks();
+          })
+        }
       }
+
+      // checkMove: function(e) {
+      //   window.console.log("Future index: " + e.draggedContext.futureIndex);
+      // }
     },
 
-    beforeMount() { this.listTasks() }
+    beforeMount() { 
+      this.listTasks();
+      this.completedTasks();
+      this.todoTasks();
+    }
   })
 });

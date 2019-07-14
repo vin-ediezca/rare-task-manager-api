@@ -21,31 +21,45 @@
           <div class="ui header">
             <i class="icon play circle orange"></i>In Progress Tasks ({{ todoTasks.length }})
           </div>
-          <task 
-            v-bind:task="task" 
-            v-for="task in todoTasks" /> <!-- or instead of this you can do below -->
-          <!--
-          <div class="ui segment task"
-               v-bind:class="task.completed ? 'done' : 'todo' "
-               v-for="task in todoTasks">
-            {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
-          </div>
-          -->
+          <draggable 
+            :list="todoTasksList" 
+            @start="dragging = true"
+            @end="dragging = false"
+            @update="onUpdate"
+          >
+            <task 
+              v-bind:task="task" 
+              v-for="task in todoTasksList" /> <!-- or instead of this you can do below -->
+            <!--
+            <div class="ui segment task"
+                 v-bind:class="task.completed ? 'done' : 'todo' "
+                 v-for="task in todoTasks">
+              {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
+            </div>
+            -->
+          </draggable>
         </div>
         <div id="completed" class="tasklist">
           <div class="ui header">
             <i class="icon check circle green"></i>Completed Tasks ({{ completedTasks.length }})
           </div>
-          <task 
-            v-bind:task="task" 
-            v-for="task in completedTasks" /> <!-- or instead of this you can do below -->
-          <!--
-          <div class="ui segment task"
-               v-bind:class="task.completed ? 'done' : 'todo' "
-               v-for="task in completedTasks">
-            {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
-          </div>
-          -->
+          <draggable 
+            :list="completedTasksList" 
+            @start="dragging = true" 
+            @end="dragging = false"
+            @update="onUpdate"
+          >
+            <task 
+              v-bind:task="task" 
+              v-for="task in completedTasksList" /> <!-- or instead of this you can do below -->
+            <!--
+            <div class="ui segment task"
+                 v-bind:class="task.completed ? 'done' : 'todo' "
+                 v-for="task in completedTasks">
+              {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
+            </div>
+            -->
+          </draggable>
         </div>
       </div>
       <div class="six wide column">
