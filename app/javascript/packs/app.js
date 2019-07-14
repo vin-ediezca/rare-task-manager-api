@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import draggable from 'vuedraggable';
-
-const Api = require('./api');
+import Api from './api';
 
 document.addEventListener("DOMContentLoaded", () => {
   var app = new Vue({
@@ -49,19 +48,22 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     methods: {
       listTasks: function() {
-        Api.listTasks().then(function(response) {
+        const tasksApi = new Api();
+        tasksApi.listTasks().then(function(response) {
           app.tasks = response;
         })
       },
 
       completedTasks: function() {
-        Api.listTasks().then(function(response) {
+        const completedApi = new Api();
+        completedApi.listTasks().then(function(response) {
           app.completedTasksList = response.filter(item => item.completed == true);
         })
       },
 
       todoTasks: function() {
-        Api.listTasks().then(function(response) {
+        const todoApi = new Api();
+        todoApi.listTasks().then(function(response) {
           app.todoTasksList = response.filter(item => item.completed == false);
         })
       },
@@ -83,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
           task.completed = !task.completed;
           this.task = task;
 
-          Api.updateTask(this.task).then(function(response) {
+          const updateApi = new Api(this.task);
+          updateApi.updateTask().then(function(response) {
             app.listTasks();
             app.clear();
             let status = response.completed ? 'completed' : 'in progress';
@@ -116,7 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
           tasks = completed;
         };
         
-        Api.createTask(this.task).then(function(response) {
+        const createApi = new Api(this.task);
+        createApi.createTask().then(function(response) {
           app.saveOrder(tasks);
           app.clear();
           app.message = `Task ${response.id} created.`;
@@ -138,10 +142,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       },
 
-      updateTask: function(event, id) {
+      updateTask: function(event) {
         event.stopImmediatePropagation();
 
-        Api.updateTask(this.task).then(function(response) {
+        const updateApi = new Api(this.task);
+        updateApi.updateTask().then(function(response) {
           app.listTasks();
           app.clear();
           app.message = `Task ${response.id} updated.`;
@@ -152,11 +157,12 @@ document.addEventListener("DOMContentLoaded", () => {
         event.stopImmediatePropagation();
 
         if (confirm("Are you sure?")) {
-
           let taskIndex = this.tasks.findIndex(item => item.id == id);
+          let task = this.tasks.find(item => item.id == id);
 
           if (taskIndex > -1) {
-            Api.deleteTask(id).then(function(response) {
+            const deleteApi = new Api(task);
+            deleteApi.deleteTask(task).then(function(response) {
               app.$delete(app.tasks, taskIndex);
               app.message = `Task ${id} deleted.`;
             });
@@ -180,8 +186,10 @@ document.addEventListener("DOMContentLoaded", () => {
       },
 
       saveOrder: function(tasks) {
+        var instance = [];
         for(var i = 0; i<tasks.length; i++) {
-          Api.updateTask(tasks[i]).then(function() {
+          instance[i] = new Api(tasks[i]);
+          instance[i].updateTask().then(function() {
             app.completedTasks();
             app.todoTasks();
           })

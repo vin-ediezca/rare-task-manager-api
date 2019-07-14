@@ -1,48 +1,54 @@
 import axios from 'axios';
 
-export function listTasks() {
-  return axios.get('/tasks.json').then(function(response) {
-    return response.data;
-  })
+class Api {
+  constructor(task) {
+    this.task = task;
+  }
+
+  listTasks() {
+    return axios.get('/tasks.json')
+      .then(function(response) {
+        return response.data;
+      })
+  }
+
+  createTask() {
+    var localTask = this.task;
+
+    return axios.post('/tasks.json', localTask)
+      .then(function(response) {
+        return response.data;
+      }).catch(function(error) {
+        console.log(error);
+      })
+  }
+
+  updateTask() {
+    var task = this.task;
+    var localTask = { name: task.name,
+                      description: task.description,
+                      completed: task.completed,
+                      order: task.order }
+
+    return axios.put(`/tasks/${task.id}.json`, localTask)
+      .then(function(response) {
+        return response.data;
+      }).catch(function(error) {
+        console.log(error);
+        alert(`Request failed for task id: ${task.id}`);
+      })
+  }
+
+  deleteTask() {
+    var taskId = this.task.id;
+
+    return axios.delete(`/tasks/${taskId}.json`)
+      .then(function(response) {
+        return 'success';
+      }).catch(function(error) {
+        console.log(error);
+      })
+  }
 }
 
-export function createTask(task) {
-  var localTask = task;
-
-  return axios.post('/tasks.json', localTask).then(function(response) {
-    return response.data;
-  }).catch(function(error) {
-    console.log(error);
-  })
-}
-
-export function updateTask(task) {
-  var taskId = task.id;
-  var localTask = { name: task.name,
-                    description: task.description,
-                    completed: task.completed,
-                    order: task.order }
-
-  return axios.put(`/tasks/${taskId}.json`, localTask).then(function(response) {
-    return response.data;
-  }).catch(function(error) {
-    console.log(error);
-    alert(`Request failed for task id: ${taskId}`);
-  })
-}
-
-export function deleteTask(task_id) {
-  return axios.delete(`/tasks/${task_id}.json`).then(function(response) {
-    return 'success';
-  }).catch(function(error) {
-    console.log(error);
-  })
-}
-
-export function changeOrder(task_id) {
-  return axios.put(`/tasks/${task_id}.json`).then(function(response) {
-    return 'success';
-  }).catch(function(error) {
-    console.log(error);
-  })
-}
+export default Api;
