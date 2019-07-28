@@ -25,18 +25,26 @@
             :list="todoTasksList" 
             @start="dragging = true"
             @end="dragging = false"
-            @update="onUpdate"
-          >
-            <task 
+            @update="onUpdate">
+            <!-- <task 
               v-bind:task="task" 
-              v-for="task in todoTasksList" /> <!-- or instead of this you can do below -->
-            <!--
+              v-for="task in todoTasksList" /> -->
             <div class="ui segment task"
-                 v-bind:class="task.completed ? 'done' : 'todo' "
-                 v-for="task in todoTasks">
-              {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
+              v-bind:class="task.completed ? 'done' : 'todo' "
+              v-for="task in todoTasksList">
+              <div class="ui grid">
+                <div class="left floated twelve wide column">
+                  <div class="ui checkbox">
+                    <input type="checkbox" name="task" v-on:click="toggleDone($event, task.id)" :checked="task.completed" >
+                    <label>{{ task.name }} <span class="description">{{ task.description }}</span></label>
+                  </div>
+                </div>
+                <div class="right floated three wide column">
+                  <i class="icon pencil blue" alt="Edit" v-on:click="editTask($event, task.id)"></i>
+                  <i class="icon trash red" alt="Delete" v-on:click="deleteTask($event, task.id)"></i>
+                </div>
+              </div>
             </div>
-            -->
           </draggable>
         </div>
         <div id="completed" class="tasklist">
@@ -47,18 +55,26 @@
             :list="completedTasksList" 
             @start="dragging = true" 
             @end="dragging = false"
-            @update="onUpdate"
-          >
-            <task 
+            @update="onUpdate">
+            <!-- <task 
               v-bind:task="task" 
-              v-for="task in completedTasksList" /> <!-- or instead of this you can do below -->
-            <!--
+              v-for="task in completedTasksList" /> -->
             <div class="ui segment task"
-                 v-bind:class="task.completed ? 'done' : 'todo' "
-                 v-for="task in completedTasks">
-              {{ task.id }} {{ task.name }}: {{ task.description }} completed? {{ task.completed }}
+              v-bind:class="task.completed ? 'done' : 'todo' "
+              v-for="task in completedTasksList">
+              <div class="ui grid">
+                <div class="left floated twelve wide column">
+                  <div class="ui checkbox">
+                    <input type="checkbox" name="task" v-on:click="toggleDone($event, task.id)" :checked="task.completed" >
+                    <label>{{ task.name }} <span class="description">{{ task.description }}</span></label>
+                  </div>
+                </div>
+                <div class="right floated three wide column">
+                  <i class="icon pencil blue" alt="Edit" v-on:click="editTask($event, task.id)"></i>
+                  <i class="icon trash red" alt="Delete" v-on:click="deleteTask($event, task.id)"></i>
+                </div>
+              </div>
             </div>
-            -->
           </draggable>
         </div>
       </div>
