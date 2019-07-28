@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // }
     },
     data: {
-      // tasks: [],
+      tasks: [],
       todoTasksList: [],
       completedTasksList: [],
       task: {},
@@ -47,12 +47,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // }
     },
     methods: {
-      // listTasks: function() {
-      //   const tasksApi = new Api();
-      //   tasksApi.listTasks().then(function(response) {
-      //     app.tasks = response;
-      //   })
-      // },
+      listTasks: function() {
+        const tasksApi = new Api();
+        tasksApi.listTasks().then(function(response) {
+          app.tasks = response;
+        })
+      },
 
       completedTasks: function() {
         const completedApi = new Api();
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const deleteApi = new Api(task);
             deleteApi.deleteTask(task).then(function(response) {
               // app.$delete(app.tasks, taskIndex);
-              // app.listTasks();
+              app.listTasks();
               app.completedTasks();
               app.todoTasks();
               app.message = `Task ${id} deleted.`;
@@ -198,11 +198,12 @@ document.addEventListener("DOMContentLoaded", () => {
         var instance = [];
         for(var i = 0; i<tasks.length; i++) {
           instance[i] = new Api(tasks[i]);
-          instance[i].updateTask().then(function() {
-            app.completedTasks();
-            app.todoTasks();
-          })
-        }
+          instance[i].updateTask();
+        };
+
+        this.listTasks();
+        this.completedTasks();
+        this.todoTasks();
       }
 
       // checkMove: function(e) {
@@ -211,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     beforeMount() { 
-      // this.listTasks();
+      this.listTasks();
       this.completedTasks();
       this.todoTasks();
     }
