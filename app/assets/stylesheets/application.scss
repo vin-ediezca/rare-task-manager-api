@@ -15,3 +15,11 @@
  */
 
 @import 'semantic-ui';
+
+.task {
+  cursor: grabbing;
+}
+
+.task i {
+  cursor: pointer;
+}
